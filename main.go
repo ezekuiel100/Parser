@@ -13,7 +13,6 @@ type Token struct {
 	Value string
 }
 
-
 type Statement interface {
 	Node()
 }
@@ -35,22 +34,28 @@ func main() {
 
 	Statements := []Statement{}
 
-	for r := range tokens {
-		stmt := ParserProgram(tokens[r])
-		Statements = append(Statements , stmt)
-	}
+	stmt := ParserProgram(tokens)
+	Statements = append(Statements, stmt)
 
-	fmt.Println(Statements)
+	fmt.Printf("%+v\n", Statements)
 }
 
-
-func (ls LetStatement) Node(){
+func (ls LetStatement) Node() {
 	fmt.Println(ls)
 }
 
+func advanteToken(position *int) {
+	*position = *position + 1
+	fmt.Println(*position)
+}
 
-func ParserProgram(token Token) LetStatement {
-	if token.Type == "let" {
+func ParserProgram(tokens []Token) LetStatement {
+	position := 0
+	curToken := tokens[position]
+
+	advanteToken(&position)
+
+	if curToken.Type == "let" {
 		return parseLetStatement()
 	}
 
@@ -58,5 +63,5 @@ func ParserProgram(token Token) LetStatement {
 }
 
 func parseLetStatement() LetStatement {
-	return LetStatement{token: "let" , name: "number" , value: "10"}
+	return LetStatement{token: "let", name: "number", value: "10"}
 }
