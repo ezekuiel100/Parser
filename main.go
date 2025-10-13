@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Program struct {
 	Statements []string
@@ -11,8 +13,14 @@ type Token struct {
 	Value string
 }
 
-type Statement struct {
-	identifier  string
+
+type Statement interface {
+	Node()
+}
+
+type LetStatement struct {
+	token string
+	name  string
 	value string
 }
 
@@ -36,15 +44,19 @@ func main() {
 }
 
 
+func (ls LetStatement) Node(){
+	fmt.Println(ls)
+}
 
-func ParserProgram(token Token) Statement {
+
+func ParserProgram(token Token) LetStatement {
 	if token.Type == "let" {
 		return parseLetStatement()
 	}
 
-	return Statement{}
+	return LetStatement{}
 }
 
-func parseLetStatement() Statement {
-	return Statement{identifier: "number" , value: "10"}
+func parseLetStatement() LetStatement {
+	return LetStatement{token: "let" , name: "number" , value: "10"}
 }
