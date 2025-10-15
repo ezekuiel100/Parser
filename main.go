@@ -44,24 +44,31 @@ func (ls LetStatement) Node() {
 	fmt.Println(ls)
 }
 
-func advanteToken(position *int) {
-	*position = *position + 1
-	fmt.Println(*position)
+func advanceToken(position *int) {
+	*position++
+}
+
+type Parser struct {
+	token    []Token
+	position int
 }
 
 func ParserProgram(tokens []Token) LetStatement {
-	position := 0
-	curToken := tokens[position]
 
-	advanteToken(&position)
+	p := &Parser{token: tokens, position: 0}
+	curToken := tokens[p.position]
 
 	if curToken.Type == "let" {
-		return parseLetStatement()
+		return parseLetStatement(p)
 	}
 
 	return LetStatement{}
 }
 
-func parseLetStatement() LetStatement {
+func parseLetStatement(p *Parser) LetStatement {
+	advanceToken(&p.position)
+
+	fmt.Println("Advancing to:", p.position)
+
 	return LetStatement{token: "let", name: "number", value: "10"}
 }
