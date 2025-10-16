@@ -27,7 +27,6 @@ func main() {
 	tokens := []Token{
 		{Type: "let", Value: "let"},
 		{Type: "identifier", Value: "number"},
-		{Type: "equal", Value: "="},
 		{Type: "int", Value: "10"},
 		{Type: "eof", Value: "10"},
 	}
@@ -35,9 +34,12 @@ func main() {
 	Statements := []Statement{}
 
 	stmt := ParserProgram(tokens)
-	Statements = append(Statements, stmt)
 
-	fmt.Printf("%+v\n", Statements)
+	if stmt != nil {
+		Statements = append(Statements, *stmt)
+		fmt.Printf("%+v\n", Statements)
+	}
+
 }
 
 func (ls LetStatement) Node() {
@@ -53,7 +55,7 @@ type Parser struct {
 	position int
 }
 
-func ParserProgram(tokens []Token) LetStatement {
+func ParserProgram(tokens []Token) *LetStatement {
 
 	p := &Parser{token: tokens, position: 0}
 	curToken := tokens[p.position]
@@ -62,13 +64,24 @@ func ParserProgram(tokens []Token) LetStatement {
 		return parseLetStatement(p)
 	}
 
-	return LetStatement{}
+	return nil
 }
 
-func parseLetStatement(p *Parser) LetStatement {
+func parseLetStatement(p *Parser) *LetStatement {
 	advanceToken(&p.position)
 
-	fmt.Println("Advancing to:", p.position)
+	identifier := p.token[p.position].Value
 
-	return LetStatement{token: "let", name: "number", value: "10"}
+	advanceToken(&p.position)
+
+	if p.token[p.position].Type == "equal" {
+		advanceToken(&p.position)
+	} else {
+		fmt.Printf("Erro de sintaxe: esperado token 'equal' \n")
+		return nil
+	}
+
+	value := p.token[p.position].Value
+
+	return &LetStatement{token: "let", name: identifier, value: value}
 }
