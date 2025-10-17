@@ -46,13 +46,13 @@ func (ls LetStatement) Node() {
 	fmt.Println(ls)
 }
 
-func advanceToken(position *int) {
-	*position++
-}
-
 type Parser struct {
 	token    []Token
 	position int
+}
+
+func (p *Parser) advanceToken() {
+	p.position++
 }
 
 func ParserProgram(tokens []Token) *LetStatement {
@@ -68,14 +68,14 @@ func ParserProgram(tokens []Token) *LetStatement {
 }
 
 func parseLetStatement(p *Parser) *LetStatement {
-	advanceToken(&p.position)
+	p.advanceToken()
 
 	identifier := p.token[p.position].Value
 
-	advanceToken(&p.position)
+	p.advanceToken()
 
 	if p.token[p.position].Type == "equal" {
-		advanceToken(&p.position)
+		p.advanceToken()
 	} else {
 		fmt.Printf("Erro de sintaxe: esperado token 'equal' \n")
 		return nil
