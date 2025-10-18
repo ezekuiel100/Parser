@@ -48,7 +48,8 @@ func (ls LetStatement) Node() {
 }
 
 type Parser struct {
-	token []Token
+	token  []Token
+	errors []string
 
 	curToken  string
 	peekToken string
@@ -60,7 +61,7 @@ func (p *Parser) advanceToken() {
 }
 
 func ParserProgram(tokens []Token) *LetStatement {
-	p := &Parser{token: tokens, position: 0}
+	p := &Parser{token: tokens, errors: []string{}, position: 0}
 	p.curToken = tokens[p.position].Value
 	p.peekToken = tokens[p.position+1].Value
 
@@ -70,6 +71,15 @@ func ParserProgram(tokens []Token) *LetStatement {
 	}
 
 	return nil
+}
+
+func (p *Parser) Errors() []string {
+	return p.errors
+}
+
+func (p *Parser) Error(t string) {
+	msg := fmt.Sprintf("expexted next token to be %s, got %s instead", t, p.peekToken)
+	p.errors = append(p.errors, msg)
 }
 
 func parseLetStatement(p *Parser) *LetStatement {
