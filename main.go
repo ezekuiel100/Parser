@@ -77,7 +77,7 @@ func (p *Parser) Errors() []string {
 	return p.errors
 }
 
-func (p *Parser) Error(t string) {
+func (p *Parser) peekError(t string) {
 	msg := fmt.Sprintf("expexted next token to be %s, got %s instead", t, p.peekToken.Type)
 	p.errors = append(p.errors, msg)
 }
@@ -96,7 +96,7 @@ func parseLetStatement(p *Parser) *LetStatement {
 	if p.token[p.position].Type == "equal" {
 		p.advanceToken()
 	} else {
-		fmt.Printf("Erro de sintaxe: esperado token 'equal' \n")
+		p.peekError("equal")
 		return nil
 	}
 
