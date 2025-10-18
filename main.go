@@ -27,6 +27,7 @@ func main() {
 	tokens := []Token{
 		{Type: "let", Value: "let"},
 		{Type: "identifier", Value: "number"},
+		{Type: "equal", Value: "="},
 		{Type: "int", Value: "10"},
 		{Type: "eof", Value: "10"},
 	}
@@ -56,11 +57,11 @@ func (p *Parser) advanceToken() {
 }
 
 func ParserProgram(tokens []Token) *LetStatement {
-
 	p := &Parser{token: tokens, position: 0}
 	curToken := tokens[p.position]
 
-	if curToken.Type == "let" {
+	switch curToken.Type {
+	case "let":
 		return parseLetStatement(p)
 	}
 
@@ -69,6 +70,10 @@ func ParserProgram(tokens []Token) *LetStatement {
 
 func parseLetStatement(p *Parser) *LetStatement {
 	p.advanceToken()
+
+	if p.token[p.position].Type != "identifier" {
+		return nil
+	}
 
 	identifier := p.token[p.position].Value
 
