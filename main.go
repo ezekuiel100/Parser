@@ -58,12 +58,15 @@ type Parser struct {
 
 func (p *Parser) advanceToken() {
 	p.position++
+	p.curToken = p.peekToken
+	p.peekToken = p.token[p.position]
 }
 
 func ParserProgram(tokens []Token) *LetStatement {
 	p := &Parser{token: tokens, errors: []string{}, position: 0}
 	p.curToken = tokens[p.position]
-	p.peekToken = tokens[p.position+1]
+	p.position++
+	p.peekToken = tokens[p.position]
 
 	switch p.curToken.Type {
 	case "let":
@@ -85,22 +88,22 @@ func (p *Parser) peekError(t string) {
 func parseLetStatement(p *Parser) *LetStatement {
 	p.advanceToken()
 
-	if p.token[p.position].Type != "identifier" {
+	if p.curToken.Type != "identifier" {
 		return nil
 	}
 
-	identifier := p.token[p.position].Value
+	identifier := p.curToken.Value
 
 	p.advanceToken()
 
-	if p.token[p.position].Type == "equal" {
+	if p.curToken.Type == "equal" {
 		p.advanceToken()
 	} else {
 		p.peekError("equal")
 		return nil
 	}
 
-	value := p.token[p.position].Value
+	value := p.curToken.Value
 
 	return &LetStatement{token: "let", name: identifier, value: value}
 }
