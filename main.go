@@ -48,8 +48,11 @@ func (ls LetStatement) Node() {
 }
 
 type Parser struct {
-	token    []Token
-	position int
+	token []Token
+
+	curToken  string
+	peekToken string
+	position  int
 }
 
 func (p *Parser) advanceToken() {
@@ -58,9 +61,10 @@ func (p *Parser) advanceToken() {
 
 func ParserProgram(tokens []Token) *LetStatement {
 	p := &Parser{token: tokens, position: 0}
-	curToken := tokens[p.position]
+	p.curToken = tokens[p.position].Value
+	p.peekToken = tokens[p.position+1].Value
 
-	switch curToken.Type {
+	switch p.curToken {
 	case "let":
 		return parseLetStatement(p)
 	}
