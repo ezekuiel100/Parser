@@ -51,8 +51,8 @@ type Parser struct {
 	token  []Token
 	errors []string
 
-	curToken  string
-	peekToken string
+	curToken  Token
+	peekToken Token
 	position  int
 }
 
@@ -62,10 +62,10 @@ func (p *Parser) advanceToken() {
 
 func ParserProgram(tokens []Token) *LetStatement {
 	p := &Parser{token: tokens, errors: []string{}, position: 0}
-	p.curToken = tokens[p.position].Value
-	p.peekToken = tokens[p.position+1].Value
+	p.curToken = tokens[p.position]
+	p.peekToken = tokens[p.position+1]
 
-	switch p.curToken {
+	switch p.curToken.Type {
 	case "let":
 		return parseLetStatement(p)
 	}
@@ -78,7 +78,7 @@ func (p *Parser) Errors() []string {
 }
 
 func (p *Parser) Error(t string) {
-	msg := fmt.Sprintf("expexted next token to be %s, got %s instead", t, p.peekToken)
+	msg := fmt.Sprintf("expexted next token to be %s, got %s instead", t, p.peekToken.Type)
 	p.errors = append(p.errors, msg)
 }
 
