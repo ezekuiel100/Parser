@@ -29,18 +29,28 @@ func main() {
 		{Type: "identifier", Value: "number"},
 		{Type: "equal", Value: "="},
 		{Type: "int", Value: "10"},
-		{Type: "eof", Value: "10"},
+		{Type: "return", Value: "9"},
+		{Type: "eof", Value: ""},
 	}
 
 	Statements := []Statement{}
 
-	stmt := ParserProgram(tokens)
+	p := &Parser{tokens: tokens, errors: []string{}, position: 0}
+	p.curToken = tokens[p.position]
+	p.position++
+	p.peekToken = tokens[p.position]
 
-	if stmt != nil {
-		Statements = append(Statements, stmt)
-		fmt.Printf("%+v\n", Statements)
+	for p.curToken.Type != "eof" {
+		stmt := p.ParserProgram()
+
+		if stmt != nil {
+			Statements = append(Statements, stmt)
+		}
+
+		p.advanceToken()
 	}
 
+	fmt.Printf("%+v\n", Statements)
 }
 
 func (ls LetStatement) Node() {
@@ -62,12 +72,7 @@ func (p *Parser) advanceToken() {
 	p.peekToken = p.tokens[p.position]
 }
 
-func ParserProgram(tokens []Token) Statement {
-	p := &Parser{tokens: tokens, errors: []string{}, position: 0}
-	p.curToken = tokens[p.position]
-	p.position++
-	p.peekToken = tokens[p.position]
-
+func (p *Parser) ParserProgram() Statement {
 	switch p.curToken.Type {
 	case "let":
 		return p.parseLetStatement()
