@@ -70,7 +70,7 @@ func ParserProgram(tokens []Token) *LetStatement {
 
 	switch p.curToken.Type {
 	case "let":
-		return parseLetStatement(p)
+		return p.parseLetStatement()
 	}
 
 	return nil
@@ -85,10 +85,11 @@ func (p *Parser) peekError(t string) {
 	p.errors = append(p.errors, msg)
 }
 
-func parseLetStatement(p *Parser) *LetStatement {
+func (p *Parser) parseLetStatement() *LetStatement {
 	p.advanceToken()
 
 	if p.curToken.Type != "identifier" {
+		p.peekError("identifier")
 		return nil
 	}
 
