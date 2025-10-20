@@ -26,7 +26,6 @@ type LetStatement struct {
 func main() {
 	tokens := []Token{
 		{Type: "let", Value: "let"},
-		{Type: "identifier", Value: "number"},
 		{Type: "equal", Value: "="},
 		{Type: "int", Value: "10"},
 		{Type: "return", Value: "9"},
@@ -93,7 +92,7 @@ func (p *Parser) Errors() []string {
 }
 
 func (p *Parser) peekError(t string) {
-	msg := fmt.Sprintf("expexted next token to be %s, got %s instead", t, p.peekToken.Type)
+	msg := fmt.Sprintf("expexted next token to be %s, got %s instead", t, p.curToken.Type)
 	p.errors = append(p.errors, msg)
 }
 
