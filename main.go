@@ -69,7 +69,12 @@ type Parser struct {
 func (p *Parser) advanceToken() {
 	p.position++
 	p.curToken = p.peekToken
-	p.peekToken = p.tokens[p.position]
+
+	if p.position >= len(p.tokens) {
+		p.peekToken = p.curToken
+	} else {
+		p.peekToken = p.tokens[p.position]
+	}
 }
 
 func (p *Parser) ParserProgram() Statement {
