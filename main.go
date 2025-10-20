@@ -37,7 +37,7 @@ func main() {
 	stmt := ParserProgram(tokens)
 
 	if stmt != nil {
-		Statements = append(Statements, *stmt)
+		Statements = append(Statements, stmt)
 		fmt.Printf("%+v\n", Statements)
 	}
 
@@ -62,7 +62,7 @@ func (p *Parser) advanceToken() {
 	p.peekToken = p.tokens[p.position]
 }
 
-func ParserProgram(tokens []Token) *LetStatement {
+func ParserProgram(tokens []Token) Statement {
 	p := &Parser{tokens: tokens, errors: []string{}, position: 0}
 	p.curToken = tokens[p.position]
 	p.position++
