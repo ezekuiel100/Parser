@@ -81,6 +81,8 @@ func (p *Parser) ParserProgram() Statement {
 	switch p.curToken.Type {
 	case "let":
 		return p.parseLetStatement()
+	case "return":
+		return p.parseReturnStatement()
 	}
 
 	return nil
@@ -117,4 +119,21 @@ func (p *Parser) parseLetStatement() *LetStatement {
 	value := p.curToken.Value
 
 	return &LetStatement{token: "let", name: identifier, value: value}
+}
+
+type ReturnStatement struct {
+	token       Token
+	ReturnValue string
+}
+
+func (p *Parser) parseReturnStatement() *ReturnStatement {
+	p.advanceToken()
+
+	//handle expression
+
+	return &ReturnStatement{token: p.curToken, ReturnValue: p.curToken.Value}
+}
+
+func (r ReturnStatement) Node() {
+	fmt.Println(r)
 }
