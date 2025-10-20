@@ -18,7 +18,7 @@ type Statement interface {
 }
 
 type LetStatement struct {
-	token string
+	token Token
 	name  string
 	value string
 }
@@ -118,7 +118,7 @@ func (p *Parser) parseLetStatement() *LetStatement {
 
 	value := p.curToken.Value
 
-	return &LetStatement{token: "let", name: identifier, value: value}
+	return &LetStatement{token: p.curToken, name: identifier, value: value}
 }
 
 type ReturnStatement struct {
