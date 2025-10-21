@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -18,14 +19,15 @@ type Statement interface {
 }
 
 type LetStatement struct {
-	token Token
-	name  string
-	value string
+	Token Token
+	Name  string
+	Value string
 }
 
 func main() {
 	tokens := []Token{
 		{Type: "let", Value: "let"},
+		{Type: "identifier", Value: "number"},
 		{Type: "equal", Value: "="},
 		{Type: "int", Value: "10"},
 		{Type: "return", Value: "9"},
@@ -49,7 +51,8 @@ func main() {
 		p.advanceToken()
 	}
 
-	fmt.Printf("%+v\n", Statements)
+	b, _ := json.MarshalIndent(Statements, "", " ")
+	fmt.Println(string(b))
 }
 
 func (ls LetStatement) Node() {
@@ -117,11 +120,11 @@ func (p *Parser) parseLetStatement() *LetStatement {
 
 	value := p.curToken.Value
 
-	return &LetStatement{token: p.curToken, name: identifier, value: value}
+	return &LetStatement{Token: p.curToken, Name: identifier, Value: value}
 }
 
 type ReturnStatement struct {
-	token       Token
+	Token       Token
 	ReturnValue string
 }
 
@@ -130,7 +133,7 @@ func (p *Parser) parseReturnStatement() *ReturnStatement {
 
 	//handle expression
 
-	return &ReturnStatement{token: p.curToken, ReturnValue: p.curToken.Value}
+	return &ReturnStatement{Token: p.curToken, ReturnValue: p.curToken.Value}
 }
 
 func (r ReturnStatement) Node() {
