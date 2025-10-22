@@ -24,6 +24,17 @@ type LetStatement struct {
 	Value string
 }
 
+const (
+	_ int = iota
+	LOWEST
+	EQUALS      //==
+	LESSGREATER // > or <
+	SUM         // +
+	PRODUCT     //*
+	PREFIX      // -X or !X
+	CALL        // myFunction(X)
+)
+
 func main() {
 	tokens := []Token{
 		{Type: "let", Value: "let"},
