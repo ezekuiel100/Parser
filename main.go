@@ -30,6 +30,7 @@ func main() {
 		{Type: "identifier", Value: "number"},
 		{Type: "equal", Value: "="},
 		{Type: "int", Value: "10"},
+		{Type: "eol", Value: ""},
 		{Type: "return", Value: "9"},
 		{Type: "eof", Value: ""},
 	}
@@ -85,9 +86,10 @@ func (p *Parser) ParserProgram() Statement {
 		return p.parseLetStatement()
 	case "return":
 		return p.parseReturnStatement()
+	default:
+		return p.parserExpressionStatement()
 	}
 
-	return nil
 }
 
 func (p *Parser) Errors() []string {
@@ -138,4 +140,23 @@ func (p *Parser) parseReturnStatement() *ReturnStatement {
 
 func (r ReturnStatement) Node() {
 	fmt.Println(r)
+}
+
+type ExpressionStatement struct {
+	Token      Token
+	Expression string
+}
+
+func (e ExpressionStatement) Node() {
+	fmt.Println(e)
+}
+
+func (p *Parser) parserExpressionStatement() *ExpressionStatement {
+	expression := p.parseExpression(LOWEST)
+
+	if p.peekToken.Type == "eol" {
+		p.advanceToken()
+	}
+
+	return &ExpressionStatement{Token: p.curToken, Expression: expression}
 }
