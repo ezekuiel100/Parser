@@ -18,6 +18,11 @@ type Statement interface {
 	Node()
 }
 
+type Identifier struct {
+	Token Token
+	Value string
+}
+
 type Expression interface {
 	Node()
 }
@@ -57,6 +62,9 @@ func main() {
 	p.position++
 	p.peekToken = tokens[p.position]
 
+	p.prefixParseFns = make(map[string]func() Expression)
+	p.resgisterPrefix("identifier", p.parseIdentifier)
+
 	for p.curToken.Type != "eof" {
 		stmt := p.ParserProgram()
 
@@ -83,8 +91,8 @@ type Parser struct {
 	peekToken Token
 	position  int
 
-	prefixParseFns map[string]func()
-	infixParseFns  map[string]func()
+	prefixParseFns map[string]func() Expression
+	infixParseFns  map[string]func() Expression
 }
 
 func (p *Parser) advanceToken() {
@@ -117,6 +125,14 @@ func (p *Parser) Errors() []string {
 func (p *Parser) peekError(t string) {
 	msg := fmt.Sprintf("expexted next token to be %s, got %s instead", t, p.curToken.Type)
 	p.errors = append(p.errors, msg)
+}
+
+func (i *Identifier) Node() {
+	fmt.Println(i)
+}
+
+func (p *Parser) parseIdentifier() Expression {
+	return &Identifier{Token: p.curToken, Value: p.curToken.Value}
 }
 
 func (p *Parser) parseLetStatement() *LetStatement {
@@ -162,7 +178,7 @@ func (r ReturnStatement) Node() {
 
 type ExpressionStatement struct {
 	Token      Token
-	Expression string
+	Expression Expression
 }
 
 func (e ExpressionStatement) Node() {
@@ -179,11 +195,11 @@ func (p *Parser) parserExpressionStatement() *ExpressionStatement {
 	return &ExpressionStatement{Token: p.curToken, Expression: expression}
 }
 
-func (p *Parser) resgisterPrefix(tokenType string, fn func()) {
+func (p *Parser) resgisterPrefix(tokenType string, fn func() Expression) {
 	p.prefixParseFns[tokenType] = fn
 }
 
-func (p *Parser) registerInfix(tokenType string, fn func()) {
+func (p *Parser) registerInfix(tokenType string, fn func() Expression) {
 	p.infixParseFns[tokenType] = fn
 }
 
