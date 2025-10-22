@@ -18,6 +18,10 @@ type Statement interface {
 	Node()
 }
 
+type Expression interface {
+	Node()
+}
+
 type LetStatement struct {
 	Token Token
 	Name  string
@@ -78,6 +82,9 @@ type Parser struct {
 	curToken  Token
 	peekToken Token
 	position  int
+
+	prefixParseFns map[string]func()
+	infixParseFns  map[string]func()
 }
 
 func (p *Parser) advanceToken() {
@@ -170,4 +177,24 @@ func (p *Parser) parserExpressionStatement() *ExpressionStatement {
 	}
 
 	return &ExpressionStatement{Token: p.curToken, Expression: expression}
+}
+
+func (p *Parser) resgisterPrefix(tokenType string, fn func()) {
+	p.prefixParseFns[tokenType] = fn
+}
+
+func (p *Parser) registerInfix(tokenType string, fn func()) {
+	p.infixParseFns[tokenType] = fn
+}
+
+func (p *Parser) parseExpression(precedence int) Expression {
+	prefix := p.prefixParseFns[p.curToken.Type]
+
+	if prefix == nil {
+		return nil
+	}
+
+	leftExp := prefix()
+
+	return leftExp
 }
