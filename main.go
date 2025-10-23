@@ -253,6 +253,18 @@ func (p *Parser) parseExpression(precedence int) Expression {
 
 	leftExp := prefix()
 
+	for p.peekToken.Type != "eol" && precedence < p.peekPrecedence() {
+		infix := p.infixParseFns[p.peekToken.Type]
+
+		if infix == nil {
+			return leftExp
+		}
+
+		p.advanceToken()
+
+		leftExp = infix(leftExp)
+	}
+
 	return leftExp
 }
 
