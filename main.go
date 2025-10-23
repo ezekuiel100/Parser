@@ -119,6 +119,11 @@ func (p *Parser) peekError(t string) {
 	p.errors = append(p.errors, msg)
 }
 
+func (p *Parser) noPrefixParseFnError(t string) {
+	msg := fmt.Sprintf("no prefix parse function for %s found", t)
+	p.errors = append(p.errors, msg)
+}
+
 func (Identifier) ExpressionNode() {}
 
 func (p *Parser) parseIdentifier() Expression {
@@ -203,6 +208,7 @@ func (p *Parser) parseExpression(precedence int) Expression {
 	prefix := p.prefixParseFns[p.curToken.Type]
 
 	if prefix == nil {
+		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
 
