@@ -100,6 +100,14 @@ var precedences = map[string]int{
 	"asterisk":     PRODUCT,
 }
 
+func (p *Parser) peekPrecedence() int {
+	if p, ok := precedences[p.peekToken.Type]; ok {
+		return p
+	}
+
+	return LOWEST
+}
+
 func (p *Parser) advanceToken() {
 	p.position++
 	p.curToken = p.peekToken
