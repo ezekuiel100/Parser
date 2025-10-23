@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type Program struct {
@@ -207,4 +208,27 @@ func (p *Parser) parseExpression(precedence int) Expression {
 	leftExp := prefix()
 
 	return leftExp
+}
+
+type IntergerLiteral struct {
+	Token Token
+	Value int64
+}
+
+func (IntergerLiteral) ExpressionNode() {}
+
+func (p *Parser) parseIntegerLiteral() Expression {
+	lit := &IntergerLiteral{Token: p.curToken}
+
+	value, err := strconv.ParseInt(p.curToken.Value, 0, 64)
+
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Value)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	lit.Value = value
+
+	return lit
 }
