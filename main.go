@@ -24,13 +24,7 @@ type Identifier struct {
 }
 
 type Expression interface {
-	Node()
-}
-
-type LetStatement struct {
-	Token Token
-	Name  string
-	Value string
+	ExpressionNode()
 }
 
 const (
@@ -79,10 +73,6 @@ func main() {
 	fmt.Println(string(b))
 }
 
-func (ls LetStatement) Node() {
-	fmt.Println(ls)
-}
-
 type Parser struct {
 	tokens []Token
 	errors []string
@@ -92,7 +82,7 @@ type Parser struct {
 	position  int
 
 	prefixParseFns map[string]func() Expression
-	infixParseFns  map[string]func() Expression
+	infixParseFns  map[string]func(Expression) Expression
 }
 
 func (p *Parser) advanceToken() {
@@ -127,13 +117,19 @@ func (p *Parser) peekError(t string) {
 	p.errors = append(p.errors, msg)
 }
 
-func (i *Identifier) Node() {
-	fmt.Println(i)
-}
+func (Identifier) ExpressionNode() {}
 
 func (p *Parser) parseIdentifier() Expression {
 	return &Identifier{Token: p.curToken, Value: p.curToken.Value}
 }
+
+type LetStatement struct {
+	Token Token
+	Name  string
+	Value string
+}
+
+func (LetStatement) Node() {}
 
 func (p *Parser) parseLetStatement() *LetStatement {
 	p.advanceToken()
@@ -172,34 +168,32 @@ func (p *Parser) parseReturnStatement() *ReturnStatement {
 	return &ReturnStatement{Token: p.curToken, ReturnValue: p.curToken.Value}
 }
 
-func (r ReturnStatement) Node() {
-	fmt.Println(r)
-}
+func (ReturnStatement) Node() {}
 
 type ExpressionStatement struct {
 	Token      Token
 	Expression Expression
 }
 
-func (e ExpressionStatement) Node() {
-	fmt.Println(e)
-}
+func (ExpressionStatement) Node() {}
 
 func (p *Parser) parserExpressionStatement() *ExpressionStatement {
-	expression := p.parseExpression(LOWEST)
+	stmt := &ExpressionStatement{Token: p.curToken}
+
+	stmt.Expression = p.parseExpression(LOWEST)
 
 	if p.peekToken.Type == "eol" {
 		p.advanceToken()
 	}
 
-	return &ExpressionStatement{Token: p.curToken, Expression: expression}
+	return stmt
 }
 
 func (p *Parser) resgisterPrefix(tokenType string, fn func() Expression) {
 	p.prefixParseFns[tokenType] = fn
 }
 
-func (p *Parser) registerInfix(tokenType string, fn func() Expression) {
+func (p *Parser) registerInfix(tokenType string, fn func(Expression) Expression) {
 	p.infixParseFns[tokenType] = fn
 }
 
