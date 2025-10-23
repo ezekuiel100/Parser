@@ -60,6 +60,8 @@ func main() {
 	p.prefixParseFns = make(map[string]func() Expression)
 	p.resgisterPrefix("identifier", p.parseIdentifier)
 	p.resgisterPrefix("int", p.parseIntegerLiteral)
+	p.resgisterPrefix("bang", p.parsePrefixExpression)
+	p.resgisterPrefix("minus", p.parsePrefixExpression)
 
 	for p.curToken.Type != "eof" {
 		stmt := p.ParserProgram()
@@ -238,4 +240,23 @@ func (p *Parser) parseIntegerLiteral() Expression {
 	lit.Value = value
 
 	return lit
+}
+
+type PrefixExpression struct {
+	Token    Token
+	Operator string
+	Right    Expression
+}
+
+func (PrefixExpression) ExpressionNode() {}
+
+func (p *Parser) parsePrefixExpression() Expression {
+	expression := PrefixExpression{Token: p.curToken, Operator: p.curToken.Value}
+
+	p.advanceToken()
+
+	expression.Right = p.parseExpression(PREFIX)
+
+	return expression
+
 }
