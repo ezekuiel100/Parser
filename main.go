@@ -59,6 +59,7 @@ func main() {
 
 	p.prefixParseFns = make(map[string]func() Expression)
 	p.resgisterPrefix("identifier", p.parseIdentifier)
+	p.resgisterPrefix("int", p.parseIntegerLiteral)
 
 	for p.curToken.Type != "eof" {
 		stmt := p.ParserProgram()
