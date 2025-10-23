@@ -307,8 +307,12 @@ type InfixExpression struct {
 
 func (InfixExpression) ExpressionNode() {}
 
-func (p *Parser) parseInfixOperator() Expression {
-	infix := InfixExpression{Token: p.curToken, Operator: p.curToken.Value}
+func (p *Parser) parseInfixExpression(left Expression) Expression {
+	expression := InfixExpression{Token: p.curToken, Operator: p.curToken.Value, Left: left}
 
-	return infix
+	precedence := p.curPrecedence()
+	p.advanceToken()
+	expression.Right = p.parseExpression(precedence)
+
+	return expression
 }
