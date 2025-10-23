@@ -63,6 +63,16 @@ func main() {
 	p.resgisterPrefix("bang", p.parsePrefixExpression)
 	p.resgisterPrefix("minus", p.parsePrefixExpression)
 
+	p.infixParseFns = make(map[string]func(Expression) Expression)
+	p.registerInfix("plus", p.parseInfixExpression)
+	p.registerInfix("minus", p.parseInfixExpression)
+	p.registerInfix("slash", p.parseInfixExpression)
+	p.registerInfix("asterisk", p.parseInfixExpression)
+	p.registerInfix("equal", p.parseInfixExpression)
+	p.registerInfix("no_equal", p.parseInfixExpression)
+	p.registerInfix("less_than", p.parseInfixExpression)
+	p.registerInfix("greater_than", p.parseInfixExpression)
+
 	for p.curToken.Type != "eof" {
 		stmt := p.ParserProgram()
 
@@ -91,9 +101,9 @@ type Parser struct {
 
 var precedences = map[string]int{
 	"equal":        EQUALS,
-	"not equal":    EQUALS,
-	"less than":    LESSGREATER,
-	"greater than": LESSGREATER,
+	"not_equal":    EQUALS,
+	"less_than":    LESSGREATER,
+	"greater_than": LESSGREATER,
 	"plus":         SUM,
 	"minus":        SUM,
 	"slash":        PRODUCT,
