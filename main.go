@@ -89,6 +89,17 @@ type Parser struct {
 	infixParseFns  map[string]func(Expression) Expression
 }
 
+var precedences = map[string]int{
+	"equal":        EQUALS,
+	"not equal":    EQUALS,
+	"less than":    LESSGREATER,
+	"greater than": LESSGREATER,
+	"plus":         SUM,
+	"minus":        SUM,
+	"slash":        PRODUCT,
+	"asterisk":     PRODUCT,
+}
+
 func (p *Parser) advanceToken() {
 	p.position++
 	p.curToken = p.peekToken
@@ -259,4 +270,19 @@ func (p *Parser) parsePrefixExpression() Expression {
 
 	return expression
 
+}
+
+type InfixExpression struct {
+	Token    Token
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+func (InfixExpression) ExpressionNode() {}
+
+func (p *Parser) parseInfixOperator() Expression {
+	infix := InfixExpression{Token: p.curToken, Operator: p.curToken.Value}
+
+	return infix
 }
